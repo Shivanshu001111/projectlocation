@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User IP Address</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Function to get the user's IP address
+    function getIPAddress() {
+      $.getJSON("https://api.ipify.org?format=json", function(data) {
+        var ipAddress = data.ip;
+        document.getElementById("ip-address").innerHTML = ipAddress;
+      });
+    }
+  </script>
+</head>
+<body onload="getIPAddress()">
+  <h1>User IP Address</h1>
+  <p>IP Address: <span id="ip-address"></span></p>
+</body>
+</html>
+s

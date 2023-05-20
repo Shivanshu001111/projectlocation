@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Postal Offices</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    var postOffices = []; // Store the list of post offices
+
+    // Function to get the list of post offices based on pincode
+    function getPostOffices(pincode) {
+      var url = `https://api.postalpincode.in/pincode/${pincode}`;
+
+      fetch(url)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          postOffices = data[0].PostOffice;
+          displayPostOffices(postOffices);
+        })
+        .catch(function(error) {
+          console.log("Error:", error);
+        });
+    }
+
+    // Function to display the list of post offices
+    function displayPostOffices(postOffices) {
+      var postOfficesContainer = document.getElementById("post-offices");
+      postOfficesContainer.innerHTML = ""; // Clear previous results
+
+      if (postOffices.length > 0) {
+        var searchInput = document.getElementById("search-input");
+        var searchText = searchInput.value.toLowerCase();
+
+        var filteredPostOffices = postOffices.filter(function(postOffice) {
+          var name = postOffice.Name.toLowerCase();
+          var branchType = postOffice.BranchType.toLowerCase();
+          return name.includes(searchText) || branchType.includes(searchText);
+        });
+
+        if (filteredPostOffices.length > 0) {
+          var postOfficesList = document.createElement("ul");
+
+          filteredPostOffices.forEach(function(postOffice) {
+            var postOfficeItem = document.createElement("li");
+            postOfficeItem.textContent = postOffice.Name + " (" + postOffice.BranchType + ")";
+            postOfficesList.appendChild(postOfficeItem);
+          });
+
+          postOfficesContainer.appendChild(postOfficesList);
+        } else {
+          postOfficesContainer.textContent = "No matching post offices found.";
+        }
+      } else {
+        postOfficesContainer.textContent = "No post offices found for this pincode.";
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Postal Offices</h1>
+  <input type="text" id="search-input" placeholder="Search by name or branch office" onkeyup="displayPostOffices(postOffices)">
+  <div id="post-offices"></div>
+</body>
+</html>

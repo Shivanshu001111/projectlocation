@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>pincode</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // Function to display the location information on the page
+function showPosition(position) {
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+
+  // Use reverse geocoding to get the pincode
+  var geocodingUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=YOUR_GOOGLE_MAPS_API_KEY";
+
+  fetch(geocodingUrl)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.status === "OK") {
+        var pincode;
+        for (var i = 0; i < data.results[0].address_components.length; i++) {
+          var component = data.results[0].address_components[i];
+          if (component.types.includes("postal_code")) {
+            pincode = component.long_name;
+            break;
+          }
+        }
+
+        document.getElementById("latitude").innerHTML = latitude;
+        document.getElementById("longitude").innerHTML = longitude;
+        document.getElementById("pincode").innerHTML = pincode;
+
+        // Get the list of post offices based on pincode
+        getPostOffices(pincode);
+      }
+    })
+    .catch(function(error) {
+      console.log("Error:", error);
+    });
+
+  // Rest of the code...
+}
+
+</script>
+</html>

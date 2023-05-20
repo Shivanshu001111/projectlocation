@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location Information</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    // Function to get the user's current location
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    // Function to display the location information on the page
+    function showPosition(position) {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+
+      // Use reverse geocoding to get the city and region
+      var geocodingUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=YOUR_GOOGLE_MAPS_API_KEY";
+      
+      $.getJSON(geocodingUrl, function(data) {
+        if (data.status === "OK") {
+          var city, region;
+          for (var i = 0; i < data.results[0].address_components.length; i++) {
+            var component = data.results[0].address_components[i];
+            if (component.types.includes("locality")) {
+              city = component.long_name;
+            }
+            if (component.types.includes("administrative_area_level_1")) {
+              region = component.long_name;
+            }
+          }
+          document.getElementById("latitude").innerHTML = latitude;
+          document.getElementById("longitude").innerHTML = longitude;
+          document.getElementById("city").innerHTML = city;
+          document.getElementById("region").innerHTML = region;
+        }
+      });
+
+      // Use TimeZoneDB API to get the time zone
+      var timeZoneApiKey = "YOUR_TIMEZONEDB_API_KEY";
+      var timeZoneUrl = "https://api.timezonedb.com/v2.1/get-time-zone?key=" + timeZoneApiKey + "&format=json&by=position&lat=" + latitude + "&lng=" + longitude;
+
+      $.getJSON(timeZoneUrl, function(data) {
+        if (data.status === "OK") {
+          var timeZone = data.zoneName;
+          document.getElementById("timezone").innerHTML = timeZone;
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Location Information</h1>
+  <button onclick="getLocation()">Get Location</button>
+  <p>Latitude: <span id="latitude"></span></p>
+  <p>Longitude: <span id="longitude"></span></p>
+  <p>City: <span id="city"></span></p>
+  <p>Region: <span id="region"></span></p>
+  <p>Time Zone: <span id="timezone"></span></p>
+</body>
+</html>
+
